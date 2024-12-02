@@ -41,7 +41,8 @@ resource "helm_release" "argocd" {
   depends_on = [
     kubernetes_namespace.argocd,
     helm_release.ingress-nginx,
-    helm_release.external_dns
+    helm_release.external_dns,
+    module.eks
   ]
 }
 

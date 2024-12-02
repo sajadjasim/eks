@@ -1,3 +1,18 @@
+data "aws_secretsmanager_secret" "github" {
+  name = var.github_repo_gitops_secret
+}
+
+data "aws_secretsmanager_secret_version" "github" {
+  secret_id     = data.aws_secretsmanager_secret.github.id
+}
+
+resource "argocd_repository" "github" {
+  repo            = var.github_repo_gitops
+  username        = jsondecode(data.aws_secretsmanager_secret_version.github.secret_string)["user"]
+  password        = jsondecode(data.aws_secretsmanager_secret_version.github.secret_string)["password"]
+}
+
+
 resource "argocd_application" "nginx" {
   metadata {
     name      = "nginx"
@@ -13,7 +28,7 @@ resource "argocd_application" "nginx" {
     }
 
     source {
-      repo_url        = "https://github.com/sajadjasim/demo-eks-apps.git"
+      repo_url        = var.github_repo_gitops
       path            = "nginx"
       target_revision = "main"
     }
@@ -26,4 +41,5 @@ resource "argocd_application" "nginx" {
       }
     }
   }
+  depends_on = [helm_release.argocd, argocd_repository.github]
 }

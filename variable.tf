@@ -19,3 +19,13 @@ variable "organization" {
   type    = string
   default = "sajadjasim"
 }
+
+variable "github_repo_gitops" {
+  type    = string
+  default = "https://github.com/sajadjasim/demo-eks-apps.git"
+}
+
+variable "github_repo_gitops_secret" {
+  type    = string
+  default = "github-repo-apps"
+}
